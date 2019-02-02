@@ -35,34 +35,15 @@ public class RegistroActivity extends AppCompatActivity {
                                        @Override
                                        public void onClick(View v) {
 
-                                           new Thread() {
-                                               @Override
-                                               public void run() {
-                                                   if (registrarUser(correo.getText().toString(), password.getText().toString(),user.getText().toString(), nombre.getText().toString(),apellido.getText().toString())) {
 
-                                                    mensaje="Registro Exitoso";
-                                                   }else
-                                                       mensaje="No se pudo crear el usuario, datos de correo o usuario ya existentes";
+                                           if (registrarUser(correo.getText().toString(), password.getText().toString(), user.getText().toString(), nombre.getText().toString(), apellido.getText().toString())) {
 
-                                               }
-                                           }.start();
-
-                                           final String mensa=mensaje;
-                                           new Thread(){
-                                               @Override
-                                               public void run() {
-                                                   runOnUiThread(new Runnable() {
-                                                       @Override
-                                                       public void run() {
-                                                          Toast.makeText( getApplicationContext(), "Registro Exitoso", Toast.LENGTH_LONG).show();
-
-
-                                                       }
-                                                   });
-                                               }
-                                           }.start();
+                                               Toast.makeText(getApplicationContext(), "Registro Exitoso", Toast.LENGTH_LONG).show();
+                                           } else
+                                               Toast.makeText(getApplicationContext(), "No se pudo registra, usuario o correo ya existentes", Toast.LENGTH_LONG).show();
                                        }
-        });
+                                   });
+
                 regresar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -90,10 +71,19 @@ public class RegistroActivity extends AppCompatActivity {
                     HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
                     respuesta = conexion.getResponseCode();
                     result = new StringBuilder();
-                    Thread.sleep(1000);
-                    if (respuesta == HttpURLConnection.HTTP_OK) {
 
-                        ver = true;
+                    if (respuesta == HttpURLConnection.HTTP_OK) {
+                        InputStream in= new BufferedInputStream(conexion.getInputStream());
+                        BufferedReader buf= new BufferedReader(new InputStreamReader(in));
+
+                        while (((linea=buf.readLine())!=null)){
+                            result.append(linea);
+
+                        }
+                        if (result.toString().equals("succes")){
+                            ver = true;
+                        }
+
 
 
                     }
